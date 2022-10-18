@@ -1,0 +1,4 @@
+les el = documunt.querselectorAll('#element1')[0]
+el.map((v,i)=>{
+  console.log(v.value)
+})

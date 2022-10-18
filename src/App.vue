@@ -1,26 +1,39 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <Main :state="state"/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Main from './components/Main.vue'
+var l
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    Main
+  },
+	data(){
+		return {
+			state: {
+				headerText: 'throw some c0d3z    (js)',
+        baseURL: 'https://'+window.location.hostname,
+        baseDemoURL: 'https://demo.'+(l=window.location.hostname.split('.')).filter((v,i)=>i>l.length-3).join('.'),
+        rootDomain: window.location.hostname,
+				scriptInput: null,
+				tokens: [],
+				newTokens: [],
+				oldTokens: [],
+			}
+		}
+	}
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+body, html{
+  margin: 0;
+  background: #000;
+  color: #fff;
+	overflow: hidden;
+  font-family: courier;
+  font-size: 14px;
 }
 </style>
