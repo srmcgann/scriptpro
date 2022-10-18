@@ -1,4 +1,0 @@
-let rel = Document.querySelectorAll('#Element1')[0]
-rel.Map((v,i)=>{
-  console.log(v.value)
-})
