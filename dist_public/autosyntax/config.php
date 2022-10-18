@@ -13,11 +13,11 @@
   /* based on similarity defined by $target_similarity above */
 
   $enforce_caps       = true;
-	/* self explanatory */
+  /* self explanatory */
 
   $caps_master        = 'dict';
-	/* only relevant when $enforce_caps == true */
-	/* $caps_master = 'dict' defaults caps corrections to dictionary */
-	/* $caps_master = [anything else] defaults to the user supplied caps, even if misspelled, /*
-	/* unless tokens are of different lengths, in which case lowercase is used by default */
+  /* only relevant when $enforce_caps == true */
+  /* $caps_master = 'dict' defaults caps corrections to dictionary */
+  /* $caps_master = [anything else] defaults to the user supplied caps, even if misspelled, /*
+  /* unless tokens are of different lengths, in which case lowercase is used by default */
 ?>

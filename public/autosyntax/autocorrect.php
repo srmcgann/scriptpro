@@ -66,16 +66,16 @@
 
   require('../db.php');
   $text = urldecode($_GET["i"]);
-	if(!$text){
-		$data = json_decode(file_get_contents('php://input'));
+  if(!$text){
+    $data = json_decode(file_get_contents('php://input'));
     $text = $data->{'text'};
   }
   if($text){
-		$input_mode = 'php';
-	}else{
-	  $input = $argv;
+    $input_mode = 'php';
+  }else{
+    $input = $argv;
     $text = '';
-	  if(sizeof($input)<2){
+    if(sizeof($input)<2){
       while($val = fgets(STDIN)){
         $text .= $val;
       };
@@ -85,7 +85,7 @@
       $text = implode(' ', $input);
       $input_mode = 'argv';
     }
-	}	
+  } 
 
   $words = tokenize($text);
   //forEach($words as $word){
@@ -97,7 +97,7 @@
     $idx = array_search($i, array_column($words, 'pos'));
     if($idx !== false){
       if($enforce_caps){
-				if(strlen($words[$idx]['correction']) === strlen($words[$idx]['token'])){
+        if(strlen($words[$idx]['correction']) === strlen($words[$idx]['token'])){
           for($j=0; $j<strlen($words[$idx]['token']); ++$j){
             if(ctype_upper($caps_master == 'dict' ? $words[$idx]['correction'][$j] : $words[$idx]['token'][$j])){
               echo strtoupper($words[$idx]['correction'][$j]);
@@ -108,9 +108,9 @@
         }else{
           echo $words[$idx]['correction'];
         }
-		  }else{
-				echo strtolower($words[$idx]['correction']);
-			}
+      }else{
+        echo strtolower($words[$idx]['correction']);
+      }
       $i += $words[$idx]['olen'];
     }else{
       echo $data[$i];

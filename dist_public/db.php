@@ -9,7 +9,7 @@
   $demoSandbox='demo.dweet.net';
   $baseAssetsURL = 'https://assets.dweet.net';
   $local = false;
-	$baseFullURL = ($local ? 'http://' : 'https://') . $baseURL;
+  $baseFullURL = ($local ? 'http://' : 'https://') . $baseURL;
   $link = mysqli_connect($db_host, $db_user, $db_pass, $db);
 ?>
 
