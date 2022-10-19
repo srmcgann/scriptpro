@@ -65,12 +65,12 @@
   }
 
   require('../db.php');
-  $text = urldecode($_GET["i"]);
-  if(!$text){
+  if(isset($_GET['i'])) $text = urldecode($_GET["i"]);
+  if(!isset($text)){
     $data = json_decode(file_get_contents('php://input'));
-    $text = $data->{'text'};
+    if($data) $text = $data->{'text'};
   }
-  if($text){
+  if(isset($text)){
     $input_mode = 'php';
   }else{
     $input = $argv;

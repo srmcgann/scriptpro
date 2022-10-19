@@ -1,5 +1,6 @@
 var
 style
+forEach
 else
 map
 switch
@@ -1192,7 +1193,6 @@ px
 rad
 registerProperty
 rem
-s
 supports
 turn
 vh

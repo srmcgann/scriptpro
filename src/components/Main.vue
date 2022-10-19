@@ -2,14 +2,13 @@
   <div class="main">
      <div v-html="state.headerText" class="header"></div>
      <div
-       @touchstart="$refs['scriptInput'].focus()"
-       @click="$refs['scriptInput'].focus()"
-       @mousedown="$refs['scriptInput'].focus()"
+       @touchstart="processFocus()"
+       @click="processFocus()"
+       @mousedown="processFocus()"
        id="debug"
        ref="debug"
      ></div>
-     <div
-       contenteditable
+     <textarea
        @scroll="doScroll()"
        spellcheck="false"
        ref="scriptInput"
@@ -18,7 +17,7 @@
        @keydown="processInput()"
        @keypress="processInput()"
        @input="processInput()"
-     ></div>
+     ></textarea>
   </div>
 </template>
 
@@ -36,8 +35,7 @@ export default {
     doScroll(){
       this.$refs['debug'].style.opacity = 0
       this.$nextTick(()=>{
-        console.log(this.state.scriptInput.scrollTop)
-        this.$refs['debug'].scrollTo(0, this.state.scriptInput.scrollTop)
+        this.$refs['debug'].scrollTo(0, this.state.scriptInput.scrollTop-0)
         this.$refs['debug'].style.opacity = 1
       })
     },
@@ -65,13 +63,13 @@ export default {
             fresh = false
             highlight = true
             let gb = newTokens[j].value == q.value
-            let style = i<200 ? 'style="margin-top: 15px;"' : ''
-            out += (gb ? '' : '<button '+style+' onmouseover="this.focus()" onmouseleave="window.res()" onclick="window.swp('+j+')" class="cor" id="corbut'+j+'">'+newTokens[j].value+'</button>')
-            out += '<span id="cordiv'+j+'" tabindex="'+j+'"'
+            let style = ''//i<200 ? 'style="margin-top: 15px;"' : ''
+            out += (gb ? '' : '<button '+style+' onmouseover="this.focus()" onclick="window.swp('+j+')" class="cor" id="corbut'+j+'">'+newTokens[j].value+'</button>')
+            out += '<span id="cordiv'+j+'" tabindex="'+j+'" '
             out += (gb ? '' : 'onmouseleave="window.ob('+j+')" onmouseover="window.tv('+j+')" ')
             out += 'class="' + (gb?'good':'bad') + 'Class">'
             i += q.value.length-1
-            out += q.value=="\n"?"":q.value
+            out += q.value=="\n"?"":(q.value == ' '?'&nbsp;':q.value)
             //out += q.value==' '?'&nbsp;':q.value
           }
         })
@@ -80,17 +78,15 @@ export default {
         }
         if(v == "\n") out += "\n"
       }
-      console.log(out)
-      this.$refs['debug'].style.opacity = 0
-      this.$refs['debug'].innerHTML = out + "\n"
+      this.$refs['debug'].innerHTML = out + "\n\n\n"
       this.doScroll()
     },
     getCorrection(){
-      if(!this.state.scriptInput.innerText){
+      if(!this.state.scriptInput.value){
         this.$refs['debug'].innerHTML = ''
         return
       }
-      let sendData = {text: this.state.scriptInput.innerText}
+      let sendData = {text: this.state.scriptInput.value}
       fetch('https://'+this.state.rootDomain+'/autosyntax/autocorrect.php', {
           method: 'POST',
           headers: {
@@ -129,10 +125,11 @@ export default {
       return tokens
     },
     processInput(){
-      let script = this.state.scriptInput.innerText
+      let script = this.state.scriptInput.value
       if(!script) this.$refs['debug'].innerHTML=''
       if(!script || this.oscript == script) return
       this.oscript = script
+      this.$refs['debug'].style.opacity = 0
       this.$refs['debug'].innerHTML=''
       let tokens = this.tokenize(script)
       if(tokens.length){
@@ -149,22 +146,36 @@ export default {
         this.$refs['debug'].innerHTML=''
       }
       this.getCorrection()
+    },
+    processFocus(e){
+      return
+      let divel = document.querySelector('#cordiv' + e)
+      let butel = document.querySelector('#corbut' + e)
+      if((document.activeElement != divel && document.activeElement != butel)){
+        this.state.scriptInput.focus()
+      }
     }
   },
   mounted(){
     this.state.scriptInput = this.$refs['scriptInput']
-    this.state.scriptInput.focus()
+
+     this.state.scriptInput.focus()
      window.tv = e => {
-       document.querySelector('#corbut' + e).style.display='inline-block'
-     }
-     window.res=()=>{
-       this.$refs['scriptInput'].focus()
+     let el;
+     (el = document.querySelector('#corbut' + e)).style.display='inline-block'
+       let divel = document.querySelector('#cordiv' + e)
+       let butel = document.querySelector('#corbut' + e)
+       document.querySelectorAll('.cor').forEach(v=>{
+         if(v != el){
+           v.style.display = 'none'
+         }
+       })
      }
      window.swp = e => {
        let swptgt = this.state.newTokens[e]
        let out = ''
-       for(let i = 0; i < this.state.scriptInput.innerText.length; ++i){
-         let v = this.state.scriptInput.innerText[i]
+       for(let i = 0; i < this.state.scriptInput.value.length; ++i){
+         let v = this.state.scriptInput.value[i]
          if(i==swptgt.pos){
            let olen = this.state.oldTokens[e].value.length
            out += swptgt.value
@@ -173,14 +184,19 @@ export default {
            out += v
          }
        }
-       this.state.scriptInput.innerText = out
+       this.state.scriptInput.value = out
        this.processInput()
      }
      window.ob = e => {
        setTimeout(()=>{
          let divel = document.querySelector('#cordiv' + e)
          let butel = document.querySelector('#corbut' + e)
-         if((document.activeElement != divel && document.activeElement != butel)) butel.style.display='none'
+         document.querySelectorAll('.cor').forEach(v=>{
+           if(v != divel && v != butel){
+             v.style.display = 'none'
+           }
+         })
+         //if((document.activeElement != divel && document.activeElement != butel)) butel.style.display='none'
        }, 200)
      }
   }
@@ -194,9 +210,9 @@ export default {
 }
 #scriptInput{
   background: #3330;
-  color: #8ffa;
+  color: #aaa;;
   width: 100%;
-  margin-top: 16px;
+  margin-top: 14px;
   height: calc(100vh - 20px);
   font-family: courier;
   display: inline-block;
@@ -213,17 +229,18 @@ export default {
 }
 #debug{
   position: absolute;
-  top: 16px;
+  top: 17px;
   z-index: 15;
   width: 100%;
   font-family: courier;
   font-size: 14px;
   width: calc(100% - 2px);
   height: calc(100% - 20px);
-  left: 0px;
+  left: 3px;
   overflow-y:auto;
   overflow-x: hidden;
   color: #8ffa;
+  background: #0000;
   white-space: pre-line;
   pointer-events: none;
   word-break: break-all;
@@ -250,11 +267,11 @@ export default {
   position: relative;
 }
 .goodClass{
-  color: #0fca;
+  color: #6faa;
   background: #4f82;
 }
 .badClass{
-  color: #f88a;
+  color: #f00;
   pointer-events: all;
   background: #f486;
   cursor: pointer;

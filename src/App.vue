@@ -19,6 +19,7 @@ export default {
         rootDomain: window.location.hostname,
         scriptInput: null,
         tokens: [],
+        scrollPos: null,
         newTokens: [],
         oldTokens: [],
       }
